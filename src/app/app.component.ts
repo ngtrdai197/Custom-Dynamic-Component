@@ -12,7 +12,7 @@ import { MyOptionsComponent } from './my-options/my-options.component';
 export class AppComponent implements OnInit {
   public title = 'App component ...'
   @ViewChild('container', { read: ViewContainerRef, static: true }) containerRef: ViewContainerRef
-  private ngDestroyed$ = new Subject<boolean>()
+  private ngDestroyed$ = new Subject<void>()
   private myCommunityRef: ComponentRef<MyCommunityComponent>
   private myOptionsRef: ComponentRef<MyOptionsComponent>
   constructor(private readonly cfr: ComponentFactoryResolver) { }
@@ -38,8 +38,9 @@ export class AppComponent implements OnInit {
   public async onActivateMyOptions() {
     this.clearContainerRef()
     const { MyOptionsComponent } = await import('./my-options/my-options.component')
+    const injector = this.containerRef.injector
     const componentFactory = this.cfr.resolveComponentFactory(MyOptionsComponent)
-    const componentRef = this.containerRef.createComponent(componentFactory);
+    const componentRef = this.containerRef.createComponent(componentFactory, this.containerRef.length, injector);
     this.myOptionsRef = componentRef
     const cb = componentRef.instance.nameChange
     this.handleMyOptions(cb)
